@@ -1,34 +1,41 @@
 import pandas as pd
-import numpy as np
-import os
 import datetime as dt
+import os
 
-path = os.getcwd()
-path = '/Users/user/Desktop/Fernando/RendaFixa'
+path = str(os.getcwd()).replace("\\","/")
 df = pd.read_excel(path + '/feriados_nacionais.xls')
-df_fmt = df[0:936]
-all_holiday = list(df_fmt['Data'])
 
-dt.date(2020,1,1) + dt.timedelta(days=1)
-dt.date(2022,1,25).weekday() != 6
+dt.date(2010,1,1) > dt.date(2020,1,1)
 
-def working_days(inicial_date, final_date):
-    workday = []
+def working_days(inicial_date, final_date, operation_form = 'buy'):
+    if operation_form == 'buy':
+        inicial_date = inicial_date - dt.timedelta(days=1)
+    elif operation_form == 'liquidate':
+        inicial_date = inicial_date
+    if inicial_date > final_date:
+        date_cache = inicial_date
+        inicial_date = final_date
+        final_date = date_cache
+    elif inicial_date == final_date:
+        return []
+    workdays = []
+    mon_to_fri = [0, 1, 2, 3, 4]
     while inicial_date != final_date:
         inicial_date = inicial_date + dt.timedelta(days=1)
-        if inicial_date.weekday() != 6 or 7:
-            workday.append(inicial_date)
-    return workday
+        day = inicial_date.weekday()
+        if day in mon_to_fri:
+            workdays.append(inicial_date)  
+    return workdays
 
-# Já conta como se fosse data de liquidação (D+1)
-ex =working_days(dt.date(2020,1,1), dt.date(2021,1,1))
+def anbima_calendar(calendar, workdays):
+    df_fmt = calendar[0:936]
+    lst_calendar = list(df_fmt['Data'])
+    lst_calendar_date_fmt = []
+    for holiday in lst_calendar:
+        lst_calendar_date_fmt.append(holiday.date())
+    for holiday in lst_calendar_date_fmt:
+        if holiday in workdays: workdays.remove(holiday)
+    return workdays
 
-all_holiday_fmt = []
-for holiday in all_holiday:
-    all_holiday_fmt.append(holiday.date())
-
-for holiday in all_holiday_fmt:
-    if holiday in ex: ex.remove(holiday)
-
-liquidation_date = len(ex)
-buy_date = len(ex) + 1# colocar um dt.timedelta(days=-1), algo assim para já receber o dado direto, tudo depende de como será feito
+# Teste
+len(anbima_calendar(df, working_days(dt.date(2021,1,1), dt.date(2010,1,1), operation_form='liquidate')))
