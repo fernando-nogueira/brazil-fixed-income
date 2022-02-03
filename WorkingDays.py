@@ -4,7 +4,7 @@ import os
 import math
 
 path = str(os.getcwd()).replace("\\","/")
-df = pd.read_excel(path + '\OneDrive - Petros/Fernando/Projetos/FixedIncome/feriados_nacionais.xls')
+df = pd.read_excel(path + '/feriados_nacionais.xls')
 
 def truncate(number, decimals=0):
     """
@@ -96,17 +96,39 @@ def coupon_working_days(date1, calendar, lst_coupon_dates):
     for data in lst_coupon_dates:
         lst_coupon_working_days.append(anbima_filter(calendar,working_days(date1, data, 'buy')))
     return lst_coupon_working_days
-    
+
+# Cálculo dos títulos
+# Pré fixados
+
+# Exponencial de dias  OK
+# P.U. OK
+
+def ltn(date1, date2, calendar, rate):
+    days = anbima_filter(calendar, working_days(date1, date2))
+    exponencial_days = truncate(days/252, 14)
+    p_u = truncate(1000/(1+rate)**(exponencial_days), 2)
+    return p_u
+
+# Juros semestrais - OK
+# Exponencial de dias OK
+# P.U. OK
+# Round nos cupons descontados
+
 def ntn_f(date1, date2, calendar, rate):
     lst_days = coupon_working_days(date1, calendar, coupon_dates(date1, date2, calendar))
     coupon_payments = []
     for num in range(0, len(lst_days)):
         if num == 0:
-            coupon_payments.append(round(1048.80885/(1+rate) ** ((lst_days[num])/252),9))
+            exponencial_days = truncate(lst_days[num]/252, 16)
+            coupon_payments.append(round(1048.80885/(1+rate) ** exponencial_days,9))
         else:
-            coupon_payments.append(round(48.80885/(1+rate) ** ((lst_days[num])/252),9))
+            exponencial_days = truncate(lst_days[num]/252, 16)
+            coupon_payments.append(round(48.80885/(1+rate) ** exponencial_days,9))
     p_u = truncate(sum(coupon_payments), 2)
     return p_u
+
+# Como pegar dados do FATOR Acumulado da SELIC, pela internet
+# Paramos o código por aqui, nas préfixadas e voltamos quando tivermos acesso as VNA's dos títulos pós-fixados
 
 day_2 = dt.date(2031,1,1)
 day_1 = dt.date(2022,2,1)     
@@ -114,10 +136,7 @@ ield = 0.1122
 ntn_f(day_1, day_2, df,ield)     
 # 945,68
 
-def ltn(date1, date2, calendar, rate):
-    days = anbima_filter(calendar, working_days(date1, date2))                     
-    p_u = truncate(1000/(1+rate)**(days/252), 2)
-    return p_u
+
 ltn(dt.date(2022, 2, 1), dt.date(2024, 7,1), df, 0.1147)
 # 771,51
 
