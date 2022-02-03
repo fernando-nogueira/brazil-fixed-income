@@ -1,12 +1,3 @@
-"""
-from urllib.request import urlopen, Request
-from urllib.parse import urlencode
-import urllib.request
-from datetime import date
-import datetime as dt
-import os
-"""
-
 from bs4 import BeautifulSoup
 import requests
 from datetime import date
