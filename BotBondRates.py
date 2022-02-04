@@ -44,8 +44,11 @@ else:
     df_ntnf = df_ntnf[['Data de Vencimento', 'Tx. Compra', 'Tx. Venda', 'PU']].dropna()
     df_ntnf['Título'] = 'NTN-F'
 
-    df = pd.concat([df_base, df_ltn, df_ntnf, df_lft, df_ntnb])
-    df['Data'] = ytday.strftime("%d/%m/%Y")
+    df_new = pd.concat([df_base, df_ltn, df_ntnf, df_lft, df_ntnb]) 
+    df_new['Data'] = ytday.strftime("%d/%m/%Y")
+    
+    df = pd.concat([df_base, df_new])
+    
     df = df.set_index('Data')
 
     df.to_excel('BondRates/BondRates.xlsx')
