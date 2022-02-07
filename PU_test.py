@@ -64,7 +64,7 @@ def ltn_pu(date1, date2, calendar, pu):
         days = anbima_filter(calendar, working_days(date1, date2)) - 1
     else:
         days = anbima_filter(calendar, working_days(date1, date2))
-    exponencial_days =  truncate((252/days), 14)
+    exponencial_days =  truncate((252/days), 16)
     rate = (1000/pu) ** (exponencial_days) - 1
     return truncate(rate, 4)
 
@@ -73,7 +73,7 @@ def ltn(date1, date2, calendar, rate):
         days = anbima_filter(calendar, working_days(date1, date2)) - 1
     else:
         days = anbima_filter(calendar, working_days(date1, date2))
-    exponencial_days = truncate(days/252, 14)
+    exponencial_days = truncate(days/252, 16)
     p_u = truncate(1000/(1+rate)**(exponencial_days), 2)
     return p_u
 
@@ -124,16 +124,31 @@ def coupon_working_days(date1, calendar, lst_coupon_dates):
 
 coupon_working_days(dt.date(2022,2,4),df,coupon_dates(dt.date(2022,2,4), dt.date(2031,1,1), df))
 
-pu = 662.83
-du = 607
-
-rate = (1000/pu) ** (252/du) - 1
-rate
-
-"""
-def ltn(date1, date2, calendar, rate):
-    days = anbima_filter(calendar, working_days(date1, date2))
-    exponencial_days = truncate(days/252, 14)
-    p_u = truncate(1000/(1+rate)**(exponencial_days), 2)
+def ntn_f(date1, date2, calendar, rate):
+    lst_days = coupon_working_days(date1, calendar, coupon_dates(date1, date2, calendar))
+    coupon_payments = []
+    for num in range(0, len(lst_days)):
+        if num == 0:
+            exponencial_days = truncate(lst_days[num]/252, 16)
+            coupon_payments.append(round(1048.80885/(1+rate) ** exponencial_days,9))
+        else:
+            exponencial_days = truncate(lst_days[num]/252, 16)
+            coupon_payments.append(round(48.80885/(1+rate) ** exponencial_days,9))
+    p_u = truncate(sum(coupon_payments), 2)
     return p_u
-"""
+
+def ntn_f_pu(date1, date2, calendar, pu):
+    lst_days = coupon_working_days(date1, calendar, coupon_dates(date1, date2, calendar))
+    coupon_payments = []
+     
+
+
+    i = (coupon_payments/48.80885) ** (dun/252)- 1
+    for num in range(0, len(lst_days)):
+        if num == 0:
+            exponencial_days = truncate(lst_days[num]/252, 16)
+            coupon_payments.append(round(1048.80885/(1+rate) ** exponencial_days,9))
+        else:
+            exponencial_days = truncate(lst_days[num]/252, 16)
+            coupon_payments.append(round(48.80885/(1+rate) ** exponencial_days,9))
+    p_u = truncate(sum(coupon_payments), 2)

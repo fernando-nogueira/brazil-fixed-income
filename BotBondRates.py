@@ -7,7 +7,11 @@ path = os.getcwd()
 path = str(os.getcwd()).replace("\\","/")
 path = path + '/BondRates'
 
-ytday = dt.date.today() - dt.timedelta(days=1)
+if dt.date.today().weekday() == 0:
+    ytday = dt.date.today() - dt.timedelta(days=3)
+else:
+    ytday = dt.date.today() - dt.timedelta(days=1)
+
 today_fmt  = ytday.strftime("%Y-%m-%d")
 year_fmt = ytday.strftime("%y")
 day_fmt = ytday.strftime("%d") 

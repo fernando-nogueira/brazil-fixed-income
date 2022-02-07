@@ -51,6 +51,8 @@ def working_days(inicial_date, final_date, operation_form = 'buy'):
     if final_date in workdays: workdays.remove(final_date)
     return workdays
 
+anbima_filter(df, working_days(dt.date(2022,2,7), dt.date(2024,7,1)))
+
 def anbima_filter(calendar_fmt, workdays):
     for holiday in calendar_fmt:
         if holiday in workdays: workdays.remove(holiday)
@@ -109,6 +111,17 @@ def ltn(date1, date2, calendar, rate):
     p_u = truncate(1000/(1+rate)**(exponencial_days), 2)
     return p_u
 
+def ltn_pu(date1, date2, calendar, pu):
+    if date1.weekday() == 4:
+        days = anbima_filter(calendar, working_days(date1, date2)) - 1
+    else:
+        days = anbima_filter(calendar, working_days(date1, date2))
+    exponencial_days =  truncate((252/days), 16)
+    rate = (1000/pu) ** (exponencial_days) - 1
+    return truncate(rate, 4)
+
+ltn(dt.date(2022, 2, 7), dt.date(2024,7,1), df, 0.1118)
+ltn_pu(dt.date(2022,2,7), dt.date(2024,7,1), df, 777.63)
 # Juros semestrais - OK
 # Exponencial de dias OK
 # P.U. OK
@@ -126,6 +139,14 @@ def ntn_f(date1, date2, calendar, rate):
             coupon_payments.append(round(48.80885/(1+rate) ** exponencial_days,9))
     p_u = truncate(sum(coupon_payments), 2)
     return p_u
+
+def ntn_b():
+
+def ntn_b_principal():
+
+def lft():
+
+
 
 # Como pegar dados do FATOR Acumulado da SELIC, pela internet
 # Paramos o código por aqui, nas préfixadas e voltamos quando tivermos acesso as VNA's dos títulos pós-fixados
