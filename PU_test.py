@@ -3,6 +3,7 @@ import pandas as pd
 import datetime as dt
 import os
 import math
+import scipy.optimize as optimize
 
 path = str(os.getcwd()).replace("\\","/")
 df = pd.read_excel(path + '/feriados_nacionais.xls')
@@ -152,3 +153,4 @@ def ntn_f_pu(date1, date2, calendar, pu):
             exponencial_days = truncate(lst_days[num]/252, 16)
             coupon_payments.append(round(48.80885/(1+rate) ** exponencial_days,9))
     p_u = truncate(sum(coupon_payments), 2)
+

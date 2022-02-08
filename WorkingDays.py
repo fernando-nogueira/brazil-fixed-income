@@ -51,7 +51,7 @@ def working_days(inicial_date, final_date, operation_form = 'buy'):
     if final_date in workdays: workdays.remove(final_date)
     return workdays
 
-anbima_filter(df, working_days(dt.date(2022,2,7), dt.date(2024,7,1)))
+anbima_filter(df, working_days(dt.date(2022,2,8), dt.date(2024,7,1)))
 
 def anbima_filter(calendar_fmt, workdays):
     for holiday in calendar_fmt:
@@ -92,6 +92,8 @@ def coupon_dates(date1, date2, calendar):
         lst.append(date2)
         
     return lst
+
+coupon_working_days(dt.date(2022,2,8), coupon_dates(dt.date(2022,2,8), dt.date(2024,7,1), df)
 
 def coupon_working_days(date1, calendar, lst_coupon_dates):
     lst_coupon_working_days = []
