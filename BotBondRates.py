@@ -48,9 +48,11 @@ else:
     df_ntnf = df_ntnf[['Data de Vencimento', 'Tx. Compra', 'Tx. Venda', 'PU']].dropna()
     df_ntnf['Título'] = 'NTN-F'
 
-    df_new = pd.concat([df_base, df_ltn, df_ntnf, df_lft, df_ntnb]) 
+    df_new = pd.concat([df_ltn, df_ntnf, df_lft, df_ntnb]).reset_index()
     df_new['Data'] = ytday.strftime("%d/%m/%Y")
-    
+    del df_new['index']
+    df_new.set_index('Data')
+
     df = pd.concat([df_base, df_new])
     
     df = df.set_index('Data')
