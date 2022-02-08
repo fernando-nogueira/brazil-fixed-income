@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-from datetime import date
+import datetime as dt
 import os
 import pandas as pd
 
@@ -16,7 +16,8 @@ def vna_formatting_data(url, id = "NTN-B"):
         index = 3
     html = requests.get(url).content
     soup = BeautifulSoup(html, 'html.parser')
-
+    lst_data = str(soup.find_all('tr', attrs={'style' : "background-color:silver;"})[2])
+    data = lst_data.split(' ')[6].replace('</b>','').replace('<b>','').replace('</td>','').replace('colspan="4">','')
     lst = str(soup.find_all('tr', attrs={'style':'background-color:white;'})[index])
     v_n_a = float(lst.split(' ')[3].replace('<td>', '').replace('</td>', '').replace('.','').replace(',','.'))
     if id == "NTN-B":
@@ -24,17 +25,17 @@ def vna_formatting_data(url, id = "NTN-B"):
         return [v_n_a, ipca_projection]
     elif id == "LFT":
         selic = float(lst.split(' ')[4].replace('<td>', '').replace('</td>', '').replace(',','.'))
-        return [v_n_a, selic]
+        return [v_n_a, selic, data]
 
 vna_ntnb = vna_formatting_data(url)
 vna_lft = vna_formatting_data(url, 'LFT')
-today = date.today().strftime("%d/%m/%Y")
-
+data = vna_lft[2]
 df = pd.read_excel(f'{path}/VNA.xlsx')
-if df['Data'].iloc[len(df) - 1] == today:
+
+if df['Data'].iloc[len(df) - 1] == data:
     pass
 else:
-    df = df.append({'Data': today, 
+    df = df.append({'Data': data, 
                     'VNA NTN-B': vna_ntnb[0],
                     'VNA LFT': vna_lft[0],
                     'IPCA': vna_ntnb[1],
