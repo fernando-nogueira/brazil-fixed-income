@@ -51,8 +51,6 @@ def working_days(inicial_date, final_date, operation_form = 'buy'):
     if final_date in workdays: workdays.remove(final_date)
     return workdays
 
-anbima_filter(df, working_days(dt.date(2022,2,8), dt.date(2024,7,1)))
-
 def anbima_filter(calendar_fmt, workdays):
     for holiday in calendar_fmt:
         if holiday in workdays: workdays.remove(holiday)
@@ -92,8 +90,6 @@ def coupon_dates(date1, date2, calendar):
         lst.append(date2)
         
     return lst
-
-coupon_working_days(dt.date(2022,2,8), coupon_dates(dt.date(2022,2,8), dt.date(2024,7,1), df)
 
 def coupon_working_days(date1, calendar, lst_coupon_dates):
     lst_coupon_working_days = []
@@ -142,12 +138,31 @@ def ntn_f(date1, date2, calendar, rate):
     p_u = truncate(sum(coupon_payments), 2)
     return p_u
 
-def ntn_b():
 
-def ntn_b_principal():
+def lft(date1, date2, calendar, rate, v_n_a):
+    days = anbima_filter(calendar, working_days(date1, date2))
+    cotation = 100/(1+rate) ** (days/252)
+    p_u = truncate((cotation/100), 6) * v_n_a
+    p_u = truncate(p_u, 2)
+    return p_u
 
-def lft():
+lft(dt.date(2022,2,14), dt.date(2024,9,1), df, 0.0656/100, 11358.735837 * (1+0.1065) ** (1/252))
 
+def ntn_b(date1, date2, calendar, rate, vna):
+    lst_days = coupon_working_days(date1, calendar, coupon_dates(date1, date2, calendar))
+    coupon_payments = []
+    for num in range(0, len(lst_days)):
+        if num == 0:
+            exponencial_days = truncate(lst_days[num]/252, 16)
+            coupon_payments.append(round(102.956301/(1+rate) ** exponencial_days,9))
+        else:
+            exponencial_days = truncate(lst_days[num]/252, 16)
+            coupon_payments.append(round(2.956301/(1+rate) ** exponencial_days,9))
+    cotation = truncate(sum(coupon_payments) / 100, 6)
+    p_u = truncate(cotation * vna, 2)
+    return p_u
+
+ntn_b(dt.date(2022,2,14), dt.date(2055, 5, 15),df, 5.67/100, 3809.882294)
 
 
 # Como pegar dados do FATOR Acumulado da SELIC, pela internet
@@ -163,12 +178,7 @@ ntn_f(day_1, day_2, df,ield)
 ltn(dt.date(2022, 2, 1), dt.date(2024, 7,1), df, 0.1147)
 # 771,51
 
-def lft(date1, date2, calendar, rate, v_n_a):
-    days = anbima_filter(calendar, working_days(date1, date2))
-    cotation = 100/(1+rate) ** (days/252)
-    p_u = truncate((cotation/100), 6) * v_n_a
-    p_u = truncate(p_u, 2)
-    return p_u
+
 
 lft(dt.date(2022,2,1), dt.date(2027,3,1), df, 0.2210/100 ,truncate(11318.981220*(1.0915) ** (1/252), 16))
 
