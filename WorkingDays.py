@@ -23,11 +23,11 @@ def anbima_calendar(calendar):
 
 df = anbima_calendar(df)
 
-def working_days(inicial_date, final_date, operation_form = 'buy'):
-    if operation_form == 'buy':
-        inicial_date = inicial_date + dt.timedelta(days=1)
-    elif operation_form == 'liquidate':
-        inicial_date = inicial_date
+def working_days(inicial_date, final_date, operation_form = 'D+1'):
+    day_form = int(operation_form.replace('D+', ''))
+    if inicial_date.weekday() == 4:
+        inicial_date = inicial_date + dt.timedelta(days=2)
+    inicial_date = inicial_date + dt.timedelta(days=day_form)
     if inicial_date > final_date:
         date_cache = inicial_date
         inicial_date = final_date
@@ -104,6 +104,22 @@ def ltn_pu(date1, date2, calendar, pu):
     exponencial_days =  truncate((252/days), 16)
     rate = (1000/pu) ** (exponencial_days) - 1
     return truncate(rate, 4)
+
+def ltn_pu(date1, date2, calendar, pu):
+    if date1.weekday() == 4:
+        date1 = date1 + dt.timedelta(days=2)
+    days = anbima_filter(calendar, working_days(date1, date2))
+    exponencial_days =  truncate((252/days), 16)
+    rate = (1000/pu) ** (exponencial_days) - 1
+    return truncate(rate, 4)
+
+
+# 4 de fevereiro se assemelha a 6 de fevereiro e 3 de fevereiro se assemelha a 5 (não entendi estou tirando - 1 da data)
+# print do gmail
+# Funcionou, mais por que devo adicionar 2 dias caso seja sexta ?
+# Coloca, ou seja, a minha ideia é, seria domingo então não contaria com segunda (ex-ante)
+
+# Colocar esse d + 2 lá encima
 
 def ntn_f(date1, date2, calendar, rate):
     lst_days = coupon_working_days(date1, calendar, coupon_dates(date1, date2, calendar))
